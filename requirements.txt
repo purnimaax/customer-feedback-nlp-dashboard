@@ -1,0 +1,9 @@
+streamlit
+pandas
+spacy
+nltk
+vaderSentiment
+bertopic[all]
+plotly
+hdbscan
+umap-learn
