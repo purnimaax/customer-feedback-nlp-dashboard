@@ -1,11 +1,10 @@
 streamlit
 pandas
-spacy
+spacy==3.8.2
+en-core-web-sm==3.8.0
 nltk
 vaderSentiment
 bertopic[all]
 plotly
 hdbscan
 umap-learn
-spacy
-en-core-web-sm==3.8.0
