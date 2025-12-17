@@ -13,14 +13,8 @@ except LookupError:
     nltk.download('stopwords')
 
 STOP_WORDS = set(stopwords.words('english'))
-# Load the spaCy model once (en_core_web_sm is lightweight and good for this task)
-# This model will be reused across all NLP functions
-try:
-    NLP = spacy.load("en_core_web_sm")
-except OSError:
-    print("Downloading spaCy model 'en_core_web_sm'...")
-    spacy.cli.download("en_core_web_sm")
-    NLP = spacy.load("en_core_web_sm")
+
+NLP = spacy.load("en_core_web_sm")
 
 
 def clean_text(text: str) -> str:
