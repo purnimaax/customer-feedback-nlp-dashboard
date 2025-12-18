@@ -1,9 +1,5 @@
 streamlit
 pandas
-spacy==3.8.2
 nltk
 vaderSentiment
-bertopic[all]
 plotly
-hdbscan
-umap-learn
