@@ -197,20 +197,8 @@ def main():
             )
         
         with col2:
-            try:
-                import io
-                buffer = io.BytesIO()
-                with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
-                    filtered_df.to_excel(writer, index=False, sheet_name='Reviews')
-                buffer.seek(0)
-                st.download_button(
-                    label="📊 Download as Excel",
-                    data=buffer.getvalue(),
-                    file_name="customer_reviews_analysis.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-            except Exception as e:
-                st.warning(f"Excel export unavailable: {e}")
+            st.info("💡 CSV export available. Excel requires additional dependencies.")
+
 
 if __name__ == "__main__":
     main()
