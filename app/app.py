@@ -4,8 +4,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import os
-import sys
-import subprocess
 
 # Set page config
 st.set_page_config(page_title="Customer Feedback NLP Dashboard", layout="wide")
@@ -13,51 +11,24 @@ st.set_page_config(page_title="Customer Feedback NLP Dashboard", layout="wide")
 # ==================== SETUP & DOWNLOADS ====================
 
 @st.cache_resource
-def setup_nltk():
-    """Download NLTK data if not present"""
-    try:
-        import nltk
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        import nltk
-        nltk.download('punkt', quiet=True)
-        nltk.download('averaged_perceptron_tagger', quiet=True)
-
-@st.cache_resource
-def setup_spacy():
-    """Download spacy model if not present"""
-    try:
-        import spacy
-        nlp = spacy.load("en_core_web_sm")
-        return nlp
-    except OSError:
-        import spacy
-        subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm", "-q"])
-        nlp = spacy.load("en_core_web_sm")
-        return nlp
-
-@st.cache_resource
 def load_models():
-    """Load all NLP models"""
-    setup_nltk()
-    nlp = setup_spacy()
-    
+    """Load sentiment analyzer only (no spacy needed)"""
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
     sentiment_analyzer = SentimentIntensityAnalyzer()
-    
-    return {
-        'spacy': nlp,
-        'vader': sentiment_analyzer
-    }
+    return {'vader': sentiment_analyzer}
 
 @st.cache_data
 def load_data():
     """Load processed reviews"""
     csv_path = "data/processed/reviews_with_topics.csv"
     if os.path.exists(csv_path):
-        return pd.read_csv(csv_path)
+        df = pd.read_csv(csv_path)
+        # Ensure topic_keywords exists (fallback if missing)
+        if 'topic_keywords' not in df.columns:
+            df['topic_keywords'] = 'General Feedback'
+        return df
     else:
-        st.error("❌ Data file not found. Please run: `python scripts/pipeline_offline.py`")
+        st.error("❌ Data file not found at: data/processed/reviews_with_topics.csv")
         return None
 
 # ==================== MAIN APP ====================
@@ -185,20 +156,13 @@ def main():
     st.subheader("📥 Export Results")
     
     if len(filtered_df) > 0:
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            csv = filtered_df.to_csv(index=False)
-            st.download_button(
-                label="📥 Download as CSV",
-                data=csv,
-                file_name="customer_reviews_analysis.csv",
-                mime="text/csv"
-            )
-        
-        with col2:
-            st.info("💡 CSV export available. Excel requires additional dependencies.")
-
+        csv = filtered_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download as CSV",
+            data=csv,
+            file_name="customer_reviews_analysis.csv",
+            mime="text/csv"
+        )
 
 if __name__ == "__main__":
     main()
