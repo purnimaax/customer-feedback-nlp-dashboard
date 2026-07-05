@@ -23,6 +23,7 @@ from nlp import (
     get_topic_for_review,
     extract_noun_phrases
 )
+from input_schema import normalize_feedback_frame
 
 # Define data paths
 RAW_DATA_PATH = PROJECT_DIR / "data" / "raw" / "reviews.csv"
@@ -43,6 +44,7 @@ def process_reviews(input_file: str, output_file: str, sample: bool = False, sam
     
     try:
         df = pd.read_csv(input_file)
+        df = normalize_feedback_frame(df)
         logger.info(f"Loaded {len(df)} reviews")
     except FileNotFoundError:
         logger.error(f"File not found: {input_file}")
@@ -55,11 +57,6 @@ def process_reviews(input_file: str, output_file: str, sample: bool = False, sam
     if sample and len(df) > sample_size:
         logger.info(f"Sampling {sample_size} reviews for testing...")
         df = df.sample(n=sample_size, random_state=42)
-    
-    # Check if required columns exist
-    if "reviewText" not in df.columns:
-        logger.error("'reviewText' column not found in reviews CSV")
-        return
     
     # Initialize new columns
     logger.info("Processing reviews...")

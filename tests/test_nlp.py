@@ -6,6 +6,7 @@ Run with: pytest tests/test_nlp.py -v
 import pytest
 import sys
 from pathlib import Path
+import pandas as pd
 
 # Add project root to path
 PROJECT_DIR = Path(__file__).parent.parent
@@ -17,6 +18,7 @@ from nlp import (
     get_topic_for_review,
     extract_noun_phrases,
 )
+from input_schema import normalize_feedback_frame
 
 
 class TestPreprocessing:
@@ -49,6 +51,26 @@ class TestPreprocessing:
         assert "@" not in result
         assert "#" not in result
         assert "123" not in result
+
+    def test_normalize_xquik_text_export(self):
+        """Test social text export normalization"""
+        df = pd.DataFrame(
+            {
+                "tweet_text": ["Great launch", "Needs support"],
+                "platform": ["x", "x"],
+            }
+        )
+        result = normalize_feedback_frame(df)
+        assert result["reviewText"].tolist() == ["Great launch", "Needs support"]
+        assert result["overall"].tolist() == [3, 3]
+        assert result["source"].tolist() == ["x", "x"]
+        assert result["source_text_column"].tolist() == ["tweet_text", "tweet_text"]
+
+    def test_normalize_requires_text_column(self):
+        """Test missing text column handling"""
+        df = pd.DataFrame({"rating": [5]})
+        with pytest.raises(ValueError, match="one text column"):
+            normalize_feedback_frame(df)
 
 
 class TestSentiment:

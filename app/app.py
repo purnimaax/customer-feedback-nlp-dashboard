@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 from datetime import datetime
 import os
 
+from input_schema import normalize_feedback_frame
+
 # Set page config
 st.set_page_config(page_title="Customer Feedback NLP Dashboard", layout="wide")
 
@@ -22,7 +24,7 @@ def load_data():
     """Load processed reviews"""
     csv_path = "data/processed/reviews_with_topics.csv"
     if os.path.exists(csv_path):
-        df = pd.read_csv(csv_path)
+        df = normalize_feedback_frame(pd.read_csv(csv_path))
         # Ensure topic_keywords exists (fallback if missing)
         if 'topic_keywords' not in df.columns:
             df['topic_keywords'] = 'General Feedback'

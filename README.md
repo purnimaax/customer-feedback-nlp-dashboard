@@ -49,6 +49,11 @@ python scripts/pipeline_offline.py --input data/raw/reviews.csv
 python scripts/pipeline_offline.py --sample --sample-size 5000
 ```
 
+The pipeline also accepts social feedback CSV exports, including Xquik export
+columns such as `tweet_text`, plus generic `feedback_text`, `text`, `comment`,
+`body`, and `content` columns. Missing ratings default to `3`, so social text can
+flow through the same sentiment, topic, and dashboard views as product reviews.
+
 ### Step 2 (Optional): Train BERTopic model
 ```bash
 # Train a BERTopic model on your data
